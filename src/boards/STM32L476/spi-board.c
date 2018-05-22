@@ -87,7 +87,7 @@ void SpiDeInit( Spi_t *obj )
     GpioInit( &obj->Nss, obj->Nss.pin, PIN_OUTPUT, PIN_PUSH_PULL, PIN_PULL_UP, 1 );
 }
 
-void SpiFormat( Spi_t *obj, int8_t bits, int8_t cpol, int8_t cpha, int8_t slave )
+void SpiFormat( Spi_t *obj, int32_t bits, int8_t cpol, int8_t cpha, int8_t slave )
 {
     SpiHandle[obj->SpiId].Init.Direction = SPI_DIRECTION_2LINES;
     if( bits == SPI_DATASIZE_8BIT )
@@ -136,12 +136,16 @@ void SpiFrequency( Spi_t *obj, uint32_t hz )
               ( ( ( divisor & 0x2 ) == 0 ) ? 0x0 : SPI_CR1_BR_1 ) |
               ( ( ( divisor & 0x1 ) == 0 ) ? 0x0 : SPI_CR1_BR_0 );
 
+	/* TODO: Убрать после тестирования! (делитель на 256) */
+	baudRate = SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_BR_2;
+
     SpiHandle[obj->SpiId].Init.BaudRatePrescaler = baudRate;
 }
 
 uint16_t SpiInOut( Spi_t *obj, uint16_t outData )
 {
     uint8_t rxData = 0;
+    uint8_t txData = (uint8_t) outData & 0xff;
 
     if( ( obj == NULL ) || ( SpiHandle[obj->SpiId].Instance ) == NULL )
     {
@@ -152,12 +156,14 @@ uint16_t SpiInOut( Spi_t *obj, uint16_t outData )
 
     BoardDisableIrq( );
 
+	HAL_SPI_TransmitReceive(&SpiHandle[obj->SpiId], &txData, &rxData, 1, 100);
+/*
     while( __HAL_SPI_GET_FLAG( &SpiHandle[obj->SpiId], SPI_FLAG_TXE ) == RESET );
     SpiHandle[obj->SpiId].Instance->DR = ( uint16_t ) ( outData & 0xFF );
 
     while( __HAL_SPI_GET_FLAG( &SpiHandle[obj->SpiId], SPI_FLAG_RXNE ) == RESET );
     rxData = ( uint16_t ) SpiHandle[obj->SpiId].Instance->DR;
-
+*/
     BoardEnableIrq( );
 
     return( rxData );

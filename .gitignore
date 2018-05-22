@@ -10,8 +10,14 @@ tags
 *.swp
 *.swo
 
+*.hex
+*.bin
+
 *-swp
 *-swo
+
+*.mk
+Makefile
 
 test_*
 cli_*
@@ -36,6 +42,8 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+
+CMakeFiles/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

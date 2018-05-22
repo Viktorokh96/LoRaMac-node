@@ -66,6 +66,21 @@ void GpioMcuInit( Gpio_t *obj, PinNames pin, PinModes mode, PinConfigs config, P
             obj->port = GPIOD;
             __HAL_RCC_GPIOD_CLK_ENABLE( );
         }
+		else if( ( obj->pin & 0xF0 ) == 0x40 )
+        {
+            obj->port = GPIOE;
+            __HAL_RCC_GPIOE_CLK_ENABLE( );
+        }
+		else if( ( obj->pin & 0xF0 ) == 0x50 )
+        {
+            obj->port = GPIOF;
+            __HAL_RCC_GPIOF_CLK_ENABLE( );
+        }
+		else if( ( obj->pin & 0xF0 ) == 0x60 )
+        {
+            obj->port = GPIOG;
+            __HAL_RCC_GPIOG_CLK_ENABLE( );
+        }
         else
         {
             obj->port = GPIOH;
