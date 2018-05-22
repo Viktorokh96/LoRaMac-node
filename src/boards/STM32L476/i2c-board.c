@@ -51,6 +51,7 @@ void I2cMcuInit( I2c_t *obj, I2cId_t i2cId, PinNames scl, PinNames sda )
 
 void I2cMcuFormat( I2c_t *obj, I2cMode mode, I2cDutyCycle dutyCycle, bool I2cAckEnable, I2cAckAddrMode AckAddrMode, uint32_t I2cFrequency )
 {
+	/*
     __HAL_RCC_I2C1_CLK_ENABLE( );
 
     I2cHandle.Init.ClockSpeed = I2cFrequency;
@@ -72,6 +73,7 @@ void I2cMcuFormat( I2c_t *obj, I2cMode mode, I2cDutyCycle dutyCycle, bool I2cAck
     I2cHandle.Init.NoStretchMode = I2C_NOSTRETCH_DISABLED;
 
     HAL_I2C_Init( &I2cHandle );
+	*/
 }
 
 void I2cMcuResetBus( I2c_t *obj )

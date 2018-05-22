@@ -46,6 +46,7 @@
 /*!
  * Board IO Extender pins definitions
  */
+/*
 #define IRQ_MPL3115                                 IOE_0
 #define IRQ_MAG3110                                 IOE_1
 #define GPS_POWER_ON                                IOE_2
@@ -62,6 +63,7 @@
 #define LED_2                                       IOE_13
 #define LED_3                                       IOE_14
 #define LED_4                                       IOE_15
+*/
 
 /*!
  * Board MCU pins definitions
@@ -69,10 +71,10 @@
 
 #define RADIO_RESET                                 PB_10
 
-#define RADIO_MOSI                                  PA_7
-#define RADIO_MISO                                  PA_6
-#define RADIO_SCLK                                  PA_5
-#define RADIO_NSS                                   PA_4
+#define RADIO_MOSI                                  PE_15
+#define RADIO_MISO                                  PE_14
+#define RADIO_SCLK                                  PE_13
+#define RADIO_NSS                                   PE_12
 
 #define RADIO_DIO_0                                 PB_11
 #define RADIO_DIO_1                                 PC_13
@@ -84,21 +86,21 @@
 #define RADIO_ANT_SWITCH_HF                         PA_0
 #define RADIO_ANT_SWITCH_LF                         PA_1
 
-#define OSC_LSE_IN                                  PC_14
-#define OSC_LSE_OUT                                 PC_15
+#define OSC_LSE_IN                                  NC
+#define OSC_LSE_OUT                                 NC
 
-#define OSC_HSE_IN                                  PH_0
-#define OSC_HSE_OUT                                 PH_1
+#define OSC_HSE_IN                                  NC
+#define OSC_HSE_OUT                                 NC
 
-#define USB_DM                                      PA_11
-#define USB_DP                                      PA_12
+#define USB_DM                                      NC
+#define USB_DP                                      NC
 
-#define I2C_SCL                                     PB_6
-#define I2C_SDA                                     PB_7
+#define I2C_SCL                                     NC
+#define I2C_SDA                                     NC
 
 #define BOOT_1                                      PB_2
 
-#define GPS_PPS                                     PB_1
+//#define GPS_PPS                                     PB_1
 #define UART_TX                                     PA_9
 #define UART_RX                                     PA_10
 
@@ -107,17 +109,18 @@
 #define BAT_LEVEL_CHANNEL                           ADC_CHANNEL_8
 
 #define WKUP1                                       PA_8
-#define USB_ON                                      PA_2
+//#define USB_ON                                      PA_2
 
 #define RF_RXTX                                     PA_3
 
 #define SWDIO                                       PA_13
 #define SWCLK                                       PA_14
 
-#define TEST_POINT1                                 PB_12
-#define TEST_POINT2                                 PB_13
-#define TEST_POINT3                                 PB_14
-#define TEST_POINT4                                 PB_15
+//#define TEST_POINT1                                 PB_12
+//#define TEST_POINT2                                 PB_13
+//#define TEST_POINT3                                 PB_14
+//#define TEST_POINT4                                 PB_15
+
 
 #define PIN_NC                                      PB_5
 

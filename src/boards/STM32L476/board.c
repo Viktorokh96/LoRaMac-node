@@ -30,11 +30,6 @@
 #include "i2c.h"
 #include "uart.h"
 #include "timer.h"
-#include "gps.h"
-#include "mpl3115.h"
-#include "mag3110.h"
-#include "mma8451.h"
-#include "sx9500.h"
 #include "board-config.h"
 #include "rtc-board.h"
 #include "sx1276-board.h"
@@ -53,17 +48,17 @@
 /*!
  * LED GPIO pins objects
  */
-Gpio_t Led1;
-Gpio_t Led2;
-Gpio_t Led3;
+/*Gpio_t Led1;*/
+/*Gpio_t Led2;*/
 Gpio_t Led4;
+Gpio_t Led5;
 
-Gpio_t UsbDetect;
+/*Gpio_t UsbDetect;*/
 
 /*
  * MCU objects
  */
-Adc_t Adc;
+/*Adc_t Adc;*/
 I2c_t I2c;
 Uart_t Uart1;
 #if defined( USE_USB_CDC )
@@ -137,9 +132,10 @@ void BoardEnableIrq( void )
 
 void BoardInitPeriph( void )
 {
-    Gpio_t ioPin;
+    /*Gpio_t ioPin;*/
 
     // Init the GPIO pins
+	/*
     GpioInit( &ioPin, DC_DC_EN, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 1 );
     GpioInit( &ioPin, IRQ_MPL3115, PIN_INPUT, PIN_PUSH_PULL, PIN_NO_PULL, 1 );
     GpioInit( &ioPin, IRQ_MAG3110, PIN_INPUT, PIN_PUSH_PULL, PIN_NO_PULL, 1 );
@@ -155,29 +151,30 @@ void BoardInitPeriph( void )
     GpioInit( &ioPin, TX_EN_SX9500, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 1 );
     GpioInit( &Led1, LED_1, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
     GpioInit( &Led2, LED_2, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
-    GpioInit( &Led3, LED_3, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
     GpioInit( &Led4, LED_4, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
+    GpioInit( &Led5, LED_5, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
+	*/
 
     // Init temperature, pressure and altitude sensor
-    MPL3115Init( );
+    /*MPL3115Init( );*/
 
     // Init accelerometer
-    MMA8451Init( );
+    /*MMA8451Init( );*/
 
     // Init magnetometer
-    MAG3110Init( );
+    /*MAG3110Init( );*/
 
     // Init SAR
-    SX9500Init( );
+    /*SX9500Init( );*/
 
     // Init GPS
-    GpsInit( );
+    /*GpsInit( );*/
 
     // Switch LED 1, 2, 3, 4 OFF
-    GpioWrite( &Led1, 1 );
-    GpioWrite( &Led2, 1 );
-    GpioWrite( &Led3, 1 );
-    GpioWrite( &Led4, 1 );
+    /*GpioWrite( &Led1, 1 );*/
+    /*GpioWrite( &Led2, 1 );*/
+    /*GpioWrite( &Led3, 1 );*/
+    /*GpioWrite( &Led4, 1 );*/
 }
 
 void BoardInitMcu( void )
@@ -192,7 +189,7 @@ void BoardInitMcu( void )
 
         SystemClockConfig( );
 
-        GpioInit( &UsbDetect, USB_ON, PIN_INPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
+        /*GpioInit( &UsbDetect, USB_ON, PIN_INPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
 
         RtcInit( );
 
@@ -224,9 +221,9 @@ void BoardInitMcu( void )
         SystemClockReConfig( );
     }
 
-    AdcInit( &Adc, BAT_LEVEL_PIN );
+    /*AdcInit( &Adc, BAT_LEVEL_PIN );*/
 
-    SpiInit( &SX1276.Spi, SPI_1, RADIO_MOSI, RADIO_MISO, RADIO_SCLK, NC );
+    SpiInit( &SX1276.Spi, SPI_2, RADIO_MOSI, RADIO_MISO, RADIO_SCLK, RADIO_NSS );
     SX1276IoInit( );
 
     if( McuInitialized == false )
@@ -250,20 +247,20 @@ void BoardResetMcu( void )
 
 void BoardDeInitMcu( void )
 {
-    Gpio_t ioPin;
+    /*Gpio_t ioPin;*/
 
-    AdcDeInit( &Adc );
+    /*AdcDeInit( &Adc );*/
 
     SpiDeInit( &SX1276.Spi );
     SX1276IoDeInit( );
 
-    GpioInit( &ioPin, OSC_HSE_IN, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
-    GpioInit( &ioPin, OSC_HSE_OUT, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
+    /*GpioInit( &ioPin, OSC_HSE_IN, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
+    /*GpioInit( &ioPin, OSC_HSE_OUT, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
 
-    GpioInit( &ioPin, OSC_LSE_IN, PIN_INPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
-    GpioInit( &ioPin, OSC_LSE_OUT, PIN_INPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
+    /*GpioInit( &ioPin, OSC_LSE_IN, PIN_INPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
+    /*GpioInit( &ioPin, OSC_LSE_OUT, PIN_INPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
 
-    GpioInit( &UsbDetect, USB_ON, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
+    /*GpioInit( &UsbDetect, USB_ON, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
 }
 
 uint32_t BoardGetRandomSeed( void )
@@ -309,21 +306,22 @@ static uint16_t BatteryVoltage = BATTERY_MAX_LEVEL;
 
 uint16_t BoardBatteryMeasureVolage( void )
 {
-    uint16_t vdd = 0;
-    uint16_t vref = VREFINT_CAL;
-    uint16_t vdiv = 0;
-    uint16_t batteryVoltage = 0;
+	/*uint16_t vdd = 0;*/
+    /*uint16_t vref = VREFINT_CAL;*/
+    /*uint16_t vdiv = 0;*/
+    /*uint16_t batteryVoltage = 0;*/
 
-    vdiv = AdcReadChannel( &Adc, BAT_LEVEL_CHANNEL );
-    //vref = AdcReadChannel( &Adc, ADC_CHANNEL_VREFINT );
+    /*vdiv = AdcReadChannel( &Adc, BAT_LEVEL_CHANNEL );*/
+    /*//vref = AdcReadChannel( &Adc, ADC_CHANNEL_VREFINT );*/
 
-    vdd = ( float )FACTORY_POWER_SUPPLY * ( float )VREFINT_CAL / ( float )vref;
-    batteryVoltage = vdd * ( ( float )vdiv / ( float )ADC_MAX_VALUE );
+    /*vdd = ( float )FACTORY_POWER_SUPPLY * ( float )VREFINT_CAL / ( float )vref;*/
+    /*batteryVoltage = vdd * ( ( float )vdiv / ( float )ADC_MAX_VALUE );*/
 
-    //                                vDiv
-    // Divider bridge  VBAT <-> 470k -<--|-->- 470k <-> GND => vBat = 2 * vDiv
-    batteryVoltage = 2 * batteryVoltage;
-    return batteryVoltage;
+    /*//                                vDiv*/
+    /*// Divider bridge  VBAT <-> 470k -<--|-->- 470k <-> GND => vBat = 2 * vDiv*/
+    /*batteryVoltage = 2 * batteryVoltage;*/
+
+    return BatteryVoltage;
 }
 
 uint32_t BoardGetBatteryVoltage( void )
@@ -371,20 +369,20 @@ static void BoardUnusedIoInit( void )
 
     if( GetBoardPowerSource( ) == BATTERY_POWER )
     {
-        GpioInit( &ioPin, USB_DM, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
-        GpioInit( &ioPin, USB_DP, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
+        /*GpioInit( &ioPin, USB_DM, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
+        /*GpioInit( &ioPin, USB_DP, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
     }
 
-    GpioInit( &ioPin, TEST_POINT1, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
-    GpioInit( &ioPin, TEST_POINT2, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
-    GpioInit( &ioPin, TEST_POINT3, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
-    GpioInit( &ioPin, TEST_POINT4, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
+    /*GpioInit( &ioPin, TEST_POINT1, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
+    /*GpioInit( &ioPin, TEST_POINT2, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
+    /*GpioInit( &ioPin, TEST_POINT3, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
+    /*GpioInit( &ioPin, TEST_POINT4, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
 
-    GpioInit( &ioPin, PIN_NC, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
-    GpioInit( &ioPin, BOOT_1, PIN_ANALOGIC, PIN_OPEN_DRAIN, PIN_NO_PULL, 0 );
+    /*GpioInit( &ioPin, PIN_NC, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
+    /*GpioInit( &ioPin, BOOT_1, PIN_ANALOGIC, PIN_OPEN_DRAIN, PIN_NO_PULL, 0 );*/
 
-    GpioInit( &ioPin, RF_RXTX, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
-    GpioInit( &ioPin, WKUP1, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
+    /*GpioInit( &ioPin, RF_RXTX, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
+    /*GpioInit( &ioPin, WKUP1, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
 
 #if defined( USE_DEBUGGER )
     HAL_DBGMCU_EnableDBGStopMode( );
@@ -415,8 +413,8 @@ void SystemClockConfig( void )
     RCC_OscInitStruct.LSEState = RCC_LSE_ON;
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
     RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-    RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL8;
-    RCC_OscInitStruct.PLL.PLLDIV = RCC_PLL_DIV3;
+    RCC_OscInitStruct.PLL.PLLN = 8;
+    RCC_OscInitStruct.PLL.PLLM = 3;
     if( HAL_RCC_OscConfig( &RCC_OscInitStruct ) != HAL_OK )
     {
         assert_param( FAIL );

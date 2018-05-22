@@ -347,13 +347,13 @@ void RtcEnterLowPowerStopMode( void )
         // Disable the Power Voltage Detector
         HAL_PWR_DisablePVD( );
 
-        SET_BIT( PWR->CR, PWR_CR_CWUF );
+        /*SET_BIT( PWR->CR, PWR_CR_CWUF );*/
 
         // Enable Ultra low power mode
-        HAL_PWREx_EnableUltraLowPower( );
+        /*HAL_PWREx_EnableLowPowerRun( );*/
 
         // Enable the fast wake up from Ultra low power mode
-        HAL_PWREx_EnableFastWakeUp( );
+        /*HAL_PWREx_EnableFastWakeUp( );*/
 
         // Enter Stop Mode
         HAL_PWR_EnterSTOPMode( PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI );
