@@ -66,6 +66,12 @@
 #define LED_4                                       PB_2
 #define LED_5                                       PE_8
 
+
+/*!
+ * UART Settings
+ */
+#define UART_BAUDRATE								9600
+
 /*!
  * Board MCU pins definitions
  */

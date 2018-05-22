@@ -5,7 +5,7 @@ message(FATAL_ERROR "No linker script defined")
 endif(NOT DEFINED LINKER_SCRIPT)
 message("Linker script: ${LINKER_SCRIPT}")
 
-SET(OBJECT_GEN_FLAGS "-Og -g -mthumb -fno-builtin -mcpu=cortex-m4 -Wall -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -ffunction-sections -fdata-sections -fomit-frame-pointer -mabi=aapcs -fno-unroll-loops -ffast-math -ftree-vectorize")
+SET(OBJECT_GEN_FLAGS "-Og -g -mthumb -fno-builtin -mcpu=cortex-m4 -Wall -specs=nano.specs -specs=nosys.specs -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -ffunction-sections -fdata-sections -fomit-frame-pointer -mabi=aapcs -fno-unroll-loops -ffast-math -ftree-vectorize")
 SET(CMAKE_C_FLAGS "${OBJECT_GEN_FLAGS} -std=gnu99" CACHE INTERNAL "C compiler flags")
 SET(CMAKE_CXX_FLAGS "${OBJECT_GEN_FLAGS} -std=c++11" CACHE INTERNAL "cxx compiler flags")
 SET(CMAKE_ASM_FLAGS "${OBJECT_GEN_FLAGS} -x assembler-with-cpp" CACHE INTERNAL "asm compiler flags")

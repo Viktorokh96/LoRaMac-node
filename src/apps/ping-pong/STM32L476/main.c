@@ -23,9 +23,11 @@
 #include <string.h>
 #include "board.h"
 #include "gpio.h"
+#include "uart.h"
 #include "delay.h"
 #include "timer.h"
 #include "radio.h"
+#include "logging.h"
 
 #if defined( REGION_AS923 )
 
@@ -138,6 +140,11 @@ extern Gpio_t Led4;
 extern Gpio_t Led5;
 
 /*!
+ * Uart2 Handle
+ */
+extern Uart_t Uart2;
+
+/*!
  * \brief Function to be executed on Radio Tx Done event
  */
 void OnTxDone( void );
@@ -167,6 +174,7 @@ void OnRxError( void );
  */
 int main( void )
 {
+	uint8_t addr = 0, byte = 0;
     bool isMaster = true;
     uint8_t i;
 
@@ -184,13 +192,13 @@ int main( void )
 
 	///////////////////////// TEST BLOCK ////////////////////////////
 	
-	uint8_t addr = 0, byte = 0;
 	while(1)
 	{
 		for (; addr < 128; ++addr)
 		{
 			byte = Radio.Read(addr);
-			DelayMs(50);
+			Log("Hello\n");
+			DelayMs(500);
 		}
 		addr = 0x00;
 	}

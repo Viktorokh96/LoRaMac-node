@@ -27,6 +27,7 @@
 #include "gpio-ioe.h"
 #include "adc.h"
 #include "spi.h"
+#include "uart.h"
 #include "i2c.h"
 #include "uart.h"
 #include "timer.h"
@@ -60,7 +61,7 @@ Gpio_t Led5;
  */
 /*Adc_t Adc;*/
 I2c_t I2c;
-Uart_t Uart1;
+Uart_t Uart2;
 #if defined( USE_USB_CDC )
 Uart_t UartUsb;
 #endif
@@ -204,7 +205,7 @@ void BoardInitMcu( void )
             if( GpioRead( &ioPin ) == 0 )
             {
                 UartInit( &UartUsb, UART_USB_CDC, NC, NC );
-                UartConfig( &UartUsb, RX_TX, 115200, UART_8_BIT, UART_1_STOP_BIT, NO_PARITY, NO_FLOW_CTRL );
+                UartConfig( &UartUsb, RX_TX, UART_BAUDRATE, UART_8_BIT, UART_1_STOP_BIT, NO_PARITY, NO_FLOW_CTRL );
 
                 DelayMs( 1000 ); // 1000 ms for Usb initialization
             }
@@ -224,6 +225,11 @@ void BoardInitMcu( void )
     }
 
     /*AdcInit( &Adc, BAT_LEVEL_PIN );*/
+
+	UartInit( &Uart2, UART_2, UART_TX, UART_RX );
+	UartConfig( &Uart2, RX_TX, UART_BAUDRATE, UART_8_BIT, UART_1_STOP_BIT, \
+				NO_PARITY, NO_FLOW_CTRL );
+
 
     SpiInit( &SX1276.Spi, SPI_1, RADIO_MOSI, RADIO_MISO, RADIO_SCLK, NC );
     SX1276IoInit( );

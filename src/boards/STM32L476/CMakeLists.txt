@@ -31,7 +31,7 @@ list(APPEND ${PROJECT_NAME}_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/spi-board.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/i2c-board.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/sx1276-board.c"
-	#"${CMAKE_CURRENT_SOURCE_DIR}/uart-board.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/uart-board.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/delay-board.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/sysIrqHandlers.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/../mcu/utilities.c"
@@ -59,6 +59,7 @@ list(APPEND ${PROJECT_NAME}_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_spi.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_spi_ex.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pcd.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pcd_ex.c"
 )
@@ -83,10 +84,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32
     ${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/cmsis
     ${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/STM32L4xx_HAL_Driver/Inc
-    ${CMAKE_CURRENT_SOURCE_DIR}/usb/cdc/inc
-    ${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/STM32_USB_Device_Library/Class/CDC/Inc
-    ${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/STM32_USB_Device_Library/Class/DFU/Inc
-    ${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/STM32_USB_Device_Library/Core/Inc
+	#${CMAKE_CURRENT_SOURCE_DIR}/usb/cdc/inc
+	#${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/STM32_USB_Device_Library/Class/CDC/Inc
+	#${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/STM32_USB_Device_Library/Class/DFU/Inc
+	#${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/STM32_USB_Device_Library/Core/Inc
     $<TARGET_PROPERTY:board,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:system,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:radio,INTERFACE_INCLUDE_DIRECTORIES>
