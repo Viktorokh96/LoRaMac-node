@@ -23,7 +23,7 @@
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 
 # Target definition
-set(CMAKE_SYSTEM_NAME  Generic)
+set(CMAKE_SYSTEM_NAME  Linux)
 set(CMAKE_SYSTEM_PROCESSOR ARM)
 
 #---------------------------------------------------------------------------------------
@@ -43,8 +43,8 @@ if(NOT DEFINED TOOLCHAIN_PREFIX)
     endif()
 endif()
 set(TOOLCHAIN_BIN_DIR ${TOOLCHAIN_PREFIX}/bin)
-set(TOOLCHAIN_INC_DIR ${TOOLCHAIN_PREFIX}/${TOOLCHAIN}/include)
-set(TOOLCHAIN_LIB_DIR ${TOOLCHAIN_PREFIX}/${TOOLCHAIN}/lib)
+set(TOOLCHAIN_INC_DIR ${TOOLCHAIN_PREFIX}/lib/${TOOLCHAIN}/include)
+set(TOOLCHAIN_LIB_DIR ${TOOLCHAIN_PREFIX}/lib/${TOOLCHAIN}/lib)
 
 # Set system depended extensions
 if(WIN32)

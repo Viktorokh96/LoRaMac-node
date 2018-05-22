@@ -23,18 +23,18 @@ cmake_minimum_required(VERSION 3.6)
 #---------------------------------------------------------------------------------------
 
 # Allow switching of target platform
-set(BOARD_LIST LoRaMote MoteII NAMote72 SensorNode SK-iM880A NucleoL073 NucleoL152 SAML21)
-set(BOARD LoRaMote CACHE STRING "Default target platform is LoRaMote")
+set(BOARD_LIST STM32L476 LoRaMote MoteII NAMote72 SensorNode SK-iM880A NucleoL073 NucleoL152 SAML21)
+set(BOARD STM32L476 CACHE STRING "Default target platform is STM32L476")
 set_property(CACHE BOARD PROPERTY STRINGS ${BOARD_LIST})
 
 # Allow switching of MBED shields
 set(MBED_RADIO_SHIELD_LIST SX1272MB2DAS SX1276MB1LAS SX1276MB1MAS SX1261DVK1BAS SX1262DVK1CAS SX1262DVK1DAS )
-set(MBED_RADIO_SHIELD SX1261DVK1BAS CACHE STRING "Default MBED radio shield is SX1261DVK1BAS")
+set(MBED_RADIO_SHIELD SX1276MB1LAS CACHE STRING "Default MBED radio shield is SX1276MB1LAS")
 set_property(CACHE MBED_RADIO_SHIELD PROPERTY STRINGS ${MBED_RADIO_SHIELD_LIST})
 
 # Allow switching of Applications
 set(APPLICATION_LIST LoRaMac ping-pong rx-sensi tx-cw BootLoader)
-set(APPLICATION LoRaMac CACHE STRING "Default Application is LoRaMac")
+set(APPLICATION ping-pong CACHE STRING "Default Application is ping-pong")
 set_property(CACHE APPLICATION PROPERTY STRINGS ${APPLICATION_LIST})
 
 # Switch for USB-Uart support, enable it for some Applications who needs it.
@@ -166,6 +166,18 @@ elseif(BOARD STREQUAL SAML21)
 
     # Configure radio
     set(RADIO sx1276 CACHE INTERNAL "Radio sx1276 selected")
+
+elseif(BOARD STREQUAL STM32L476)
+	# Configure toolchain for STM32L476
+	set(LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/boards/STM32L476/cmsis/LinkerScript.ld)
+    include(stm32l4)
+
+    # Build platform specific board implementation
+	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/boards/STM32L476)
+
+    # Configure radio
+    set(RADIO sx1276 CACHE INTERNAL "Radio sx1276 selected")
+
 
 endif()
 
