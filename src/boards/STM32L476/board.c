@@ -151,9 +151,10 @@ void BoardInitPeriph( void )
     GpioInit( &ioPin, TX_EN_SX9500, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 1 );
     GpioInit( &Led1, LED_1, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
     GpioInit( &Led2, LED_2, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
+	*/
+
     GpioInit( &Led4, LED_4, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
     GpioInit( &Led5, LED_5, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
-	*/
 
     // Init temperature, pressure and altitude sensor
     /*MPL3115Init( );*/
@@ -174,7 +175,8 @@ void BoardInitPeriph( void )
     /*GpioWrite( &Led1, 1 );*/
     /*GpioWrite( &Led2, 1 );*/
     /*GpioWrite( &Led3, 1 );*/
-    /*GpioWrite( &Led4, 1 );*/
+    GpioWrite( &Led4, 1 );
+    GpioWrite( &Led5, 1 );
 }
 
 void BoardInitMcu( void )
@@ -223,16 +225,18 @@ void BoardInitMcu( void )
 
     /*AdcInit( &Adc, BAT_LEVEL_PIN );*/
 
-    SpiInit( &SX1276.Spi, SPI_2, RADIO_MOSI, RADIO_MISO, RADIO_SCLK, RADIO_NSS );
+    SpiInit( &SX1276.Spi, SPI_2, RADIO_MOSI, RADIO_MISO, RADIO_SCLK, NC );
     SX1276IoInit( );
 
     if( McuInitialized == false )
     {
         McuInitialized = true;
+		/*
         if( GetBoardPowerSource( ) == BATTERY_POWER )
         {
             CalibrateSystemWakeupTime( );
         }
+		*/
     }
 }
 
@@ -378,7 +382,7 @@ static void BoardUnusedIoInit( void )
     /*GpioInit( &ioPin, TEST_POINT3, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
     /*GpioInit( &ioPin, TEST_POINT4, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
 
-    /*GpioInit( &ioPin, PIN_NC, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
+    GpioInit( &ioPin, PIN_NC, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
     /*GpioInit( &ioPin, BOOT_1, PIN_ANALOGIC, PIN_OPEN_DRAIN, PIN_NO_PULL, 0 );*/
 
     /*GpioInit( &ioPin, RF_RXTX, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/

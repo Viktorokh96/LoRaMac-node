@@ -61,27 +61,28 @@
 #define TX_EN_SX9500                                IOE_11
 #define LED_1                                       IOE_12
 #define LED_2                                       IOE_13
-#define LED_3                                       IOE_14
-#define LED_4                                       IOE_15
 */
+
+#define LED_4                                       PB_2
+#define LED_5                                       PE_8
 
 /*!
  * Board MCU pins definitions
  */
 
-#define RADIO_RESET                                 PB_10
+#define RADIO_RESET                                 NC
 
 #define RADIO_MOSI                                  PE_15
 #define RADIO_MISO                                  PE_14
 #define RADIO_SCLK                                  PE_13
 #define RADIO_NSS                                   PE_12
 
-#define RADIO_DIO_0                                 PB_11
-#define RADIO_DIO_1                                 PC_13
-#define RADIO_DIO_2                                 PB_9
-#define RADIO_DIO_3                                 PB_4
-#define RADIO_DIO_4                                 PB_3
-#define RADIO_DIO_5                                 PA_15
+#define RADIO_DIO_0                                 PA_5
+#define RADIO_DIO_1                                 PA_1
+#define RADIO_DIO_2                                 PA_2
+#define RADIO_DIO_3                                 PA_3
+#define RADIO_DIO_4                                 PE_11
+#define RADIO_DIO_5                                 PE_10
 
 #define RADIO_ANT_SWITCH_HF                         PA_0
 #define RADIO_ANT_SWITCH_LF                         PA_1
@@ -98,23 +99,23 @@
 #define I2C_SCL                                     NC
 #define I2C_SDA                                     NC
 
-#define BOOT_1                                      PB_2
+#define BOOT_1                                      NC
 
 //#define GPS_PPS                                     PB_1
-#define UART_TX                                     PA_9
-#define UART_RX                                     PA_10
+#define UART_TX                                     PD_5
+#define UART_RX                                     PD_6
 
-#define DC_DC_EN                                    PB_8
-#define BAT_LEVEL_PIN                               PB_0
+#define DC_DC_EN                                    NC
+#define BAT_LEVEL_PIN                               NC
 #define BAT_LEVEL_CHANNEL                           ADC_CHANNEL_8
 
-#define WKUP1                                       PA_8
+#define WKUP1                                       NC
 //#define USB_ON                                      PA_2
 
-#define RF_RXTX                                     PA_3
+#define RF_RXTX                                     NC
 
-#define SWDIO                                       PA_13
-#define SWCLK                                       PA_14
+#define SWDIO                                       NC
+#define SWCLK                                       NC
 
 //#define TEST_POINT1                                 PB_12
 //#define TEST_POINT2                                 PB_13
