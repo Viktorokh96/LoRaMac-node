@@ -20,6 +20,8 @@
  *
  * \author    Gregory Cristian ( Semtech )
  */
+
+#include <string.h>
 #include "stm32l4xx.h"
 #include "utilities.h"
 #include "delay.h"
@@ -174,6 +176,7 @@ void BoardInitPeriph( void )
     GpioWrite( &Led5, 1 );
 }
 
+
 void BoardInitMcu( void )
 {
     if( McuInitialized == false )
@@ -223,7 +226,6 @@ void BoardInitMcu( void )
 	UartInit( &Uart2, UART_2, UART_TX, UART_RX );
 	UartConfig( &Uart2, RX_TX, UART_BAUDRATE, UART_8_BIT, UART_1_STOP_BIT, \
 				NO_PARITY, NO_FLOW_CTRL );
-
 
     SpiInit( &SX1276.Spi, SPI_1, RADIO_MOSI, RADIO_MISO, RADIO_SCLK, NC );
     SX1276IoInit( );
@@ -413,12 +415,15 @@ void SystemClockConfig( void )
     __HAL_PWR_VOLTAGESCALING_CONFIG( PWR_REGULATOR_VOLTAGE_SCALE1 );
 
     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE | RCC_OSCILLATORTYPE_LSE;
-    RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+    RCC_OscInitStruct.HSEState = RCC_HSE_OFF;  // Внешний источник по умолчанию не подключён
     RCC_OscInitStruct.LSEState = RCC_LSE_ON;
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_MSI;
     RCC_OscInitStruct.PLL.PLLN = 8;
     RCC_OscInitStruct.PLL.PLLM = 3;
+    RCC_OscInitStruct.PLL.PLLP = 7;
+    RCC_OscInitStruct.PLL.PLLQ = 4;
+    RCC_OscInitStruct.PLL.PLLR = 4;
     if( HAL_RCC_OscConfig( &RCC_OscInitStruct ) != HAL_OK )
     {
         assert_param( FAIL );
@@ -528,6 +533,7 @@ int fputc( int c, FILE *stream )
 #if defined( USE_USB_CDC )
     while( UartPutChar( &UartUsb, c ) != 0 );
 #endif
+
     return c;
 }
 
@@ -541,15 +547,21 @@ int fputc( int c, FILE *stream )
  * Output         : None
  * Return         : None
  */
-void assert_failed( uint8_t* file, uint32_t line )
+void assert_failed( char* file, uint32_t line )
 {
     /* User can add his own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %lu\r\n", file, line) */
 
-    printf( "Wrong parameters value: file %s on line %lu\r\n", ( const char* )file, line );
+    GpioInit( &Led4, LED_4, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
+    GpioInit( &Led5, LED_5, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
+	
     /* Infinite loop */
     while( 1 )
     {
+		GpioWrite( &Led5, GpioRead ( &Led5 ) ^ 1 );
+		DelayMs(100);
+		GpioWrite( &Led4, GpioRead ( &Led5 ) ^ 1 );
+		DelayMs(100);
     }
 }
 #endif

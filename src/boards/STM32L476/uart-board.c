@@ -76,26 +76,14 @@ void UartMcuConfig( Uart_t *obj, UartMode_t mode, uint32_t baudrate, WordLength_
 
         if( mode == TX_ONLY )
         {
-            if( obj->FifoTx.Data == NULL )
-            {
-                assert_param( FAIL );
-            }
             UartHandle.Init.Mode = UART_MODE_TX;
         }
         else if( mode == RX_ONLY )
         {
-            if( obj->FifoRx.Data == NULL )
-            {
-                assert_param( FAIL );
-            }
             UartHandle.Init.Mode = UART_MODE_RX;
         }
         else if( mode == RX_TX )
         {
-            if( ( obj->FifoTx.Data == NULL ) || ( obj->FifoRx.Data == NULL ) )
-            {
-                assert_param( FAIL );
-            }
             UartHandle.Init.Mode = UART_MODE_TX_RX;
         }
         else
@@ -218,7 +206,8 @@ uint8_t UartMcuPutChar( Uart_t *obj, uint8_t data )
 		*/
 	
 
-		HAL_UART_Transmit_IT( &UartHandle, &data, 1);
+		HAL_UART_Transmit( &UartHandle, &data, 1, HAL_MAX_DELAY );
+
         return 0; // Busy
     }
 }
@@ -281,7 +270,7 @@ uint8_t UartMcuPutBuffer( Uart_t *obj, uint8_t *buffer, uint16_t size )
         }
 		*/
 
-		HAL_UART_Transmit_IT( &UartHandle, buffer, size);
+		HAL_UART_Transmit( &UartHandle, buffer, size, HAL_MAX_DELAY);
 
         return 0; // OK
     }

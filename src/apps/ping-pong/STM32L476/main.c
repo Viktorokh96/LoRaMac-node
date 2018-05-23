@@ -29,6 +29,10 @@
 #include "radio.h"
 #include "logging.h"
 
+#include "rtc-board.h"
+
+//#define CHECK_RTC 1
+
 #if defined( REGION_AS923 )
 
 #define RF_FREQUENCY                                923000000 // Hz
@@ -169,6 +173,57 @@ void OnRxTimeout( void );
  */
 void OnRxError( void );
 
+#if defined( CHECK_RTC )
+void CheckRTC( void )
+{
+	TimerTime_t time;
+	TimerEvent_t tevent;
+
+	Log("\n---RTC CHECK---\n");
+
+	Log("Delay 10 ms...\n"); 
+	Log("RtcGetTimerValue: %i\n", RtcGetTimerValue());
+	DelayMs( 10 );
+	Log("RtcGetTimerValue: %i\n", RtcGetTimerValue());
+	DelayMs( 10 );
+	Log("RtcGetTimerValue: %i\n", RtcGetTimerValue());
+
+	Log("\n---TIMERS CHECK---\n");
+
+
+	Log("Delay 10 ms...\n"); 
+	Log("Delay 100 ms...\n"); 
+	Log("Delay 1000 ms...\n"); 
+	Log("TimerGetCurrentTime: %i\n", time=TimerGetCurrentTime());
+	DelayMs( 10 );
+	Log("TimerGetElapsedTime: %i\n", TimerGetElapsedTime( time ));
+	DelayMs( 100 );
+	Log("TimerGetElapsedTime: %i\n", TimerGetElapsedTime( time ));
+	DelayMs( 1000 );
+	Log("TimerGetElapsedTime: %i\n", TimerGetElapsedTime( time ));
+
+	Log("------------\n");
+
+	TimerSetValue( &tevent, 5000 );
+
+	Log("Timer options: {Timestamp:%i, ReloadValue:%i, IsRunning:%i}\n", \
+		tevent.Timestamp, tevent.ReloadValue, tevent.IsRunning);
+
+	Log("TimerStart...\n"); 
+	TimerStart( &tevent );
+
+	Log("Delay 3000 ms...\n"); DelayMs( 3000 );
+	Log("Timer options: {Timestamp:%i, ReloadValue:%i, IsRunning:%i}\n", \
+		tevent.Timestamp, tevent.ReloadValue, tevent.IsRunning);
+
+	Log("TimerStop...\n"); 
+	TimerStop( &tevent );
+
+	Log("Timer options: {Timestamp:%i, ReloadValue:%i, IsRunning:%i}\n", \
+		tevent.Timestamp, tevent.ReloadValue, tevent.IsRunning);
+}
+#endif
+
 /**
  * Main application entry point.
  */
@@ -218,6 +273,14 @@ int main( void )
 
 #else
     #error "Please define a frequency band in the compiler options."
+#endif
+
+#if defined( CHECK_RTC )
+	while( 1 )
+	{
+		CheckRTC();
+		DelayMs(30000);
+	}
 #endif
 
     Radio.Rx( RX_TIMEOUT_VALUE );

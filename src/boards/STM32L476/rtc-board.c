@@ -224,14 +224,15 @@ void RtcInit( void )
         RtcHandle.Init.OutPut = RTC_OUTPUT_DISABLE;
         RtcHandle.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
         RtcHandle.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
-        HAL_RTC_Init( &RtcHandle );
+		
+		assert_param(HAL_RTC_Init( &RtcHandle ) == HAL_OK);
 
         // Set Date: Friday 1st of January 2000
         rtcInit.CalendarDate.Year = 0;
         rtcInit.CalendarDate.Month = 1;
         rtcInit.CalendarDate.Date = 1;
         rtcInit.CalendarDate.WeekDay = RTC_WEEKDAY_SATURDAY;
-        HAL_RTC_SetDate( &RtcHandle, &rtcInit.CalendarDate, RTC_FORMAT_BIN );
+        assert_param(HAL_RTC_SetDate( &RtcHandle, &rtcInit.CalendarDate, RTC_FORMAT_BIN ) == HAL_OK);
 
         // Set Time: 00:00:00
         rtcInit.CalendarTime.Hours = 0;
@@ -240,7 +241,7 @@ void RtcInit( void )
         rtcInit.CalendarTime.TimeFormat = RTC_HOURFORMAT12_AM;
         rtcInit.CalendarTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
         rtcInit.CalendarTime.StoreOperation = RTC_STOREOPERATION_RESET;
-        HAL_RTC_SetTime( &RtcHandle, &rtcInit.CalendarTime, RTC_FORMAT_BIN );
+        assert_param(HAL_RTC_SetTime( &RtcHandle, &rtcInit.CalendarTime, RTC_FORMAT_BIN ) == HAL_OK);
 
         HAL_NVIC_SetPriority( RTC_Alarm_IRQn, 4, 0 );
         HAL_NVIC_EnableIRQ( RTC_Alarm_IRQn );
@@ -423,6 +424,8 @@ static void RtcStartWakeUpAlarm( uint32_t timeoutValue )
     alarmStructure.AlarmMask = RTC_ALARMMASK_NONE;
     alarmStructure.AlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
 
+    alarmStructure.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
+    alarmStructure.AlarmTime.SubSeconds = alarmTimer.CalendarTime.SubSeconds;
     alarmStructure.AlarmTime.Seconds = alarmTimer.CalendarTime.Seconds;
     alarmStructure.AlarmTime.Minutes = alarmTimer.CalendarTime.Minutes;
     alarmStructure.AlarmTime.Hours = alarmTimer.CalendarTime.Hours;
