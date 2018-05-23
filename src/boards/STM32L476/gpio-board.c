@@ -29,6 +29,8 @@
 #include "gpio-ioe.h"
 #endif
 
+#define USE_NO_TIMER 1
+
 static GpioIrqHandler *GpioIrq[16];
 
 void GpioMcuInit( Gpio_t *obj, PinNames pin, PinModes mode, PinConfigs config, PinTypes type, uint32_t value )

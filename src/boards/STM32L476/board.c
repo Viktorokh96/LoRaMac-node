@@ -150,8 +150,6 @@ void BoardInitPeriph( void )
     GpioInit( &ioPin, IRQ_1_MMA8451, PIN_INPUT, PIN_PUSH_PULL, PIN_NO_PULL, 1 );
     GpioInit( &ioPin, IRQ_2_MMA8451, PIN_INPUT, PIN_PUSH_PULL, PIN_NO_PULL, 1 );
     GpioInit( &ioPin, TX_EN_SX9500, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 1 );
-    GpioInit( &Led1, LED_1, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
-    GpioInit( &Led2, LED_2, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
 	*/
 
     GpioInit( &Led4, LED_4, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
@@ -172,10 +170,6 @@ void BoardInitPeriph( void )
     // Init GPS
     /*GpsInit( );*/
 
-    // Switch LED 1, 2, 3, 4 OFF
-    /*GpioWrite( &Led1, 1 );*/
-    /*GpioWrite( &Led2, 1 );*/
-    /*GpioWrite( &Led3, 1 );*/
     GpioWrite( &Led4, 1 );
     GpioWrite( &Led5, 1 );
 }
@@ -257,18 +251,18 @@ void BoardResetMcu( void )
 
 void BoardDeInitMcu( void )
 {
-    /*Gpio_t ioPin;*/
+    Gpio_t ioPin;
 
     /*AdcDeInit( &Adc );*/
 
     SpiDeInit( &SX1276.Spi );
     SX1276IoDeInit( );
 
-    /*GpioInit( &ioPin, OSC_HSE_IN, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
-    /*GpioInit( &ioPin, OSC_HSE_OUT, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
+    GpioInit( &ioPin, OSC_HSE_IN, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
+    GpioInit( &ioPin, OSC_HSE_OUT, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
 
-    /*GpioInit( &ioPin, OSC_LSE_IN, PIN_INPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
-    /*GpioInit( &ioPin, OSC_LSE_OUT, PIN_INPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
+    GpioInit( &ioPin, OSC_LSE_IN, PIN_INPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
+    GpioInit( &ioPin, OSC_LSE_OUT, PIN_INPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
 
     /*GpioInit( &UsbDetect, USB_ON, PIN_ANALOGIC, PIN_PUSH_PULL, PIN_NO_PULL, 0 );*/
 }

@@ -114,7 +114,7 @@ typedef enum
     TX_TIMEOUT,
 }States_t;
 
-#define RX_TIMEOUT_VALUE                            1000
+#define RX_TIMEOUT_VALUE                            10
 #define BUFFER_SIZE                                 64 // Define the payload size here
 
 const uint8_t PingMsg[] = "PING";
@@ -174,7 +174,6 @@ void OnRxError( void );
  */
 int main( void )
 {
-	uint8_t addr = 0, byte = 0;
     bool isMaster = true;
     uint8_t i;
 
@@ -188,22 +187,6 @@ int main( void )
     RadioEvents.TxTimeout = OnTxTimeout;
     RadioEvents.RxTimeout = OnRxTimeout;
     RadioEvents.RxError = OnRxError;
-
-
-	///////////////////////// TEST BLOCK ////////////////////////////
-	
-	while(1)
-	{
-		for (; addr < 128; ++addr)
-		{
-			byte = Radio.Read(addr);
-			Log("Hello\n");
-			DelayMs(500);
-		}
-		addr = 0x00;
-	}
-
-	//^^^^^^^^^^^^^^^^^^^^^^^ TEST BLOCK ^^^^^^^^^^^^^^^^^^^^^^^^^^//
 
     Radio.Init( &RadioEvents );
 
@@ -350,7 +333,8 @@ int main( void )
         }
 
         TimerLowPowerHandler( );
-
+		Log("New iteration...\n");
+		DelayMs( 200 );
     }
 }
 
@@ -358,6 +342,8 @@ void OnTxDone( void )
 {
     Radio.Sleep( );
     State = TX;
+
+	Log("OnTxDone\n");
 }
 
 void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
@@ -368,22 +354,30 @@ void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
     RssiValue = rssi;
     SnrValue = snr;
     State = RX;
+
+	Log("OnRxDone: Payload size=%i RSSI=%i\n", size, rssi);
 }
 
 void OnTxTimeout( void )
 {
     Radio.Sleep( );
     State = TX_TIMEOUT;
+
+	Log("OnTxTimeout...\n");
 }
 
 void OnRxTimeout( void )
 {
     Radio.Sleep( );
     State = RX_TIMEOUT;
+
+	Log("OnRxTimeout...\n");
 }
 
 void OnRxError( void )
 {
     Radio.Sleep( );
     State = RX_ERROR;
+
+	Log("OnRxError!\n");
 }

@@ -76,7 +76,7 @@
  * Board MCU pins definitions
  */
 
-#define RADIO_RESET                                 NC
+#define RADIO_RESET                                 PB_7
 
 #define RADIO_MOSI                                  PE_15
 #define RADIO_MISO                                  PE_14
@@ -90,14 +90,14 @@
 #define RADIO_DIO_4                                 PE_11
 #define RADIO_DIO_5                                 PE_10
 
-#define RADIO_ANT_SWITCH_HF                         PA_0
-#define RADIO_ANT_SWITCH_LF                         PA_1
+#define RADIO_ANT_SWITCH_HF                         NC
+#define RADIO_ANT_SWITCH_LF                         NC
 
-#define OSC_LSE_IN                                  NC
-#define OSC_LSE_OUT                                 NC
+#define OSC_LSE_IN                                  PC_14
+#define OSC_LSE_OUT                                 PC_15
 
-#define OSC_HSE_IN                                  NC
-#define OSC_HSE_OUT                                 NC
+#define OSC_HSE_IN                                  PH_0
+#define OSC_HSE_OUT									PH_1
 
 #define USB_DM                                      NC
 #define USB_DP                                      NC
@@ -120,8 +120,8 @@
 
 #define RF_RXTX                                     NC
 
-#define SWDIO                                       NC
-#define SWCLK                                       NC
+#define SWDIO                                       PA_13
+#define SWCLK                                       PA_14
 
 //#define TEST_POINT1                                 PB_12
 //#define TEST_POINT2                                 PB_13
