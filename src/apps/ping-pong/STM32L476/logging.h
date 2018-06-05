@@ -10,6 +10,14 @@
 #ifndef LOGGING_H_
 #define LOGGING_H_
 
-void Log(char *fmtstr, ...);
+#if defined( __FILENAME__ )
+ #define Log(level, format, ...)	__log(level, __FILENAME__, __LINE__, format, ##__VA_ARGS__)
+#else
+ #define Log(level, format, ...)	__log(level, __FILE__, __LINE__, format, ##__VA_ARGS__)
+#endif
+
+
+void __log(int logLevel, char *filename, int lineno, char *fmtstr, ...);
+void SetLoggingLevel(int loggingLevel);
 
 #endif /* LOGGING_H_ */

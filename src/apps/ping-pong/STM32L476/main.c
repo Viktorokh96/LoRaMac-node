@@ -21,11 +21,14 @@
  * \author    Gregory Cristian ( Semtech )
  */
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "board.h"
 #include "gpio.h"
 #include "uart.h"
 #include "delay.h"
 #include "timer.h"
+#include "lcd.h"
 #include "radio.h"
 #include "logging.h"
 
@@ -110,6 +113,9 @@
     #error "Please define a modem in the compiler options."
 #endif
 
+#define INFO_LOG 0
+#define DEBUG_LOG 1
+
 typedef enum
 {
     LOWPOWER,
@@ -120,8 +126,13 @@ typedef enum
     TX_TIMEOUT,
 }States_t;
 
-#define RX_TIMEOUT_VALUE                            1000
+#define RX_TIMEOUT_VALUE                            2000
 #define BUFFER_SIZE                                 64 // Define the payload size here
+#define NEW_SESSION_CMD								0x01
+#define IS_NEW_SESSION(b)							((b & NEW_SESSION_CMD) == NEW_SESSION_CMD)
+#define HWORD(w)									((uint8_t) (w >> 8) & 0xFF)
+#define LWORD(w)									((uint8_t) (w) & 0xFF)
+#define GETW(h, l)									((uint16_t) (((h & 0xFF) << 8) | (l & 0xFF)))
 
 const uint8_t PingMsg[] = "PING";
 const uint8_t PongMsg[] = "PONG";
@@ -133,6 +144,9 @@ States_t State = LOWPOWER;
 
 int8_t RssiValue = 0;
 int8_t SnrValue = 0;
+
+int16_t RecivedPacketCnt = 0;
+int16_t SendedPacketCnt = 0;
 
 /*!
  * Radio events function pointer
@@ -181,17 +195,17 @@ void OnCadDone( bool channelActivityDetected );
 #if defined( CHECK_RTC )
 void Timer1TestCallback( void )
 {
-	Log("In 1 callback!\n"); DelayMs(20);
+	Log(DEBUG_LOG, "In 1 callback!\n"); DelayMs(20);
 }
 
 void Timer2TestCallback( void )
 {
-	Log("In 2 callback!\n"); DelayMs(20);
+	Log(DEBUG_LOG, "In 2 callback!\n"); DelayMs(20);
 }
 
 void Timer3TestCallback( void )
 {
-	Log("In 3 callback!\n"); DelayMs(20);
+	Log(DEBUG_LOG, "In 3 callback!\n"); DelayMs(20);
 }
 
 void CheckRTC( void )
@@ -199,30 +213,30 @@ void CheckRTC( void )
 	TimerTime_t time;
 	TimerEvent_t tevent1, tevent2, tevent3;
 
-	Log("\n---RTC CHECK---\n");
+	Log(DEBUG_LOG, "\n---RTC CHECK---\n");
 
-	Log("Delay 10 ms...\n"); 
-	Log("RtcGetTimerValue: %i\n", RtcGetTimerValue());
+	Log(DEBUG_LOG, "Delay 10 ms...\n"); 
+	Log(DEBUG_LOG, "RtcGetTimerValue: %i\n", RtcGetTimerValue());
 	DelayMs( 10 );
-	Log("RtcGetTimerValue: %i\n", RtcGetTimerValue());
+	Log(DEBUG_LOG, "RtcGetTimerValue: %i\n", RtcGetTimerValue());
 	DelayMs( 10 );
-	Log("RtcGetTimerValue: %i\n", RtcGetTimerValue());
+	Log(DEBUG_LOG, "RtcGetTimerValue: %i\n", RtcGetTimerValue());
 
-	Log("\n---TIMERS CHECK---\n");
+	Log(DEBUG_LOG, "\n---TIMERS CHECK---\n");
 
 
-	Log("Delay 10 ms...\n"); 
-	Log("Delay 100 ms...\n"); 
-	Log("Delay 1000 ms...\n"); 
-	Log("TimerGetCurrentTime: %i\n", time=TimerGetCurrentTime());
+	Log(DEBUG_LOG, "Delay 10 ms...\n"); 
+	Log(DEBUG_LOG, "Delay 100 ms...\n"); 
+	Log(DEBUG_LOG, "Delay 1000 ms...\n"); 
+	Log(DEBUG_LOG, "TimerGetCurrentTime: %i\n", time=TimerGetCurrentTime());
 	DelayMs( 10 );
-	Log("TimerGetElapsedTime: %i\n", TimerGetElapsedTime( time ));
+	Log(DEBUG_LOG, "TimerGetElapsedTime: %i\n", TimerGetElapsedTime( time ));
 	DelayMs( 100 );
-	Log("TimerGetElapsedTime: %i\n", TimerGetElapsedTime( time ));
+	Log(DEBUG_LOG, "TimerGetElapsedTime: %i\n", TimerGetElapsedTime( time ));
 	DelayMs( 1000 );
-	Log("TimerGetElapsedTime: %i\n", TimerGetElapsedTime( time ));
+	Log(DEBUG_LOG, "TimerGetElapsedTime: %i\n", TimerGetElapsedTime( time ));
 
-	Log("------------\n");
+	Log(DEBUG_LOG, "------------\n");
 
 	TimerInit( &tevent1, Timer1TestCallback );
 	TimerInit( &tevent2, Timer2TestCallback );
@@ -231,24 +245,24 @@ void CheckRTC( void )
 	TimerSetValue( &tevent2, 5000 );
 	TimerSetValue( &tevent3, 10000 );
 
-	Log("Timer options: {Timestamp:%i, ReloadValue:%i, IsRunning:%i}\n", \
+	Log(DEBUG_LOG, "Timer options: {Timestamp:%i, ReloadValue:%i, IsRunning:%i}\n", \
 		tevent1.Timestamp, tevent1.ReloadValue, tevent1.IsRunning);
 
-	Log("TimerStart...\n"); 
+	Log(DEBUG_LOG, "TimerStart...\n"); 
 	TimerStart( &tevent1 );
 	TimerStart( &tevent2 );
 	TimerStart( &tevent3 );
 
-	Log("Delay 15000 ms...\n"); DelayMs( 15000 );
-	Log("Timer options: {Timestamp:%i, ReloadValue:%i, IsRunning:%i}\n", \
+	Log(DEBUG_LOG, "Delay 15000 ms...\n"); DelayMs( 15000 );
+	Log(DEBUG_LOG, "Timer options: {Timestamp:%i, ReloadValue:%i, IsRunning:%i}\n", \
 		tevent1.Timestamp, tevent1.ReloadValue, tevent1.IsRunning);
 
-	Log("TimerStop...\n"); 
+	Log(DEBUG_LOG, "TimerStop...\n"); 
 	TimerStop( &tevent1 );
 	TimerStop( &tevent2 );
 	TimerStop( &tevent3 );
 
-	Log("Timer options: {Timestamp:%i, ReloadValue:%i, IsRunning:%i}\n", \
+	Log(DEBUG_LOG, "Timer options: {Timestamp:%i, ReloadValue:%i, IsRunning:%i}\n", \
 		tevent1.Timestamp, tevent1.ReloadValue, tevent1.IsRunning);
 }
 #endif
@@ -257,25 +271,25 @@ void TestRadio()
 {
 	uint8_t addr, data;
 
-	Log("Reading first default 16 register values...\n"); DelayMs(20);
+	Log(DEBUG_LOG, "Reading first default 16 register values...\n"); DelayMs(20);
 
 	for (addr = 0; (addr & 0xf0) == 0; ++addr) {
 		data = Radio.Read(addr);
-		Log("Address [%x] - Data [%x]\n", addr, data); DelayMs(20);
+		Log(DEBUG_LOG, "Address [%x] - Data [%x]\n", addr, data); DelayMs(20);
 	}
 
-	Log("------\n"); DelayMs(20);
+	Log(DEBUG_LOG, "------\n"); DelayMs(20);
 
-	Log("Writing values 123456789ABCDEF to first 16 registers...\n"); DelayMs(20);
+	Log(DEBUG_LOG, "Writing values 123456789ABCDEF to first 16 registers...\n"); DelayMs(20);
 
 	for (addr = 0; (addr & 0xf0) == 0; ++addr)
 		Radio.Write(addr, addr);
 
-	Log("Reading first default 16 register values...\n"); DelayMs(20);
+	Log(DEBUG_LOG, "Reading first default 16 register values...\n"); DelayMs(20);
 
 	for (addr = 0; (addr & 0xf0) == 0; ++addr) {
 		data = Radio.Read(addr);
-		Log("Address [%x] - Data [%x]\n", addr, data); DelayMs(20);
+		Log(DEBUG_LOG, "Address [%x] - Data [%x]\n", addr, data); DelayMs(20);
 	}
 }
 
@@ -285,11 +299,15 @@ void TestRadio()
 int main( void )
 {
     bool isMaster = true;
+	bool justLaunched = true;
     uint8_t i;
+	uint16_t CompanionSndCnt = 0;
 
     // Target board initialization
     BoardInitMcu( );
     BoardInitPeriph( );
+
+	Log(INFO_LOG, "Device is ready to work!\n");
 
     // Radio initialization
     RadioEvents.TxDone = OnTxDone;
@@ -299,7 +317,7 @@ int main( void )
     RadioEvents.RxError = OnRxError;
 	RadioEvents.CadDone = OnCadDone;
 
-	Log("Radio init...\n");
+	Log(DEBUG_LOG, "Radio init...\n");
     Radio.Init( &RadioEvents );
 	DelayMs(100);
 
@@ -343,25 +361,13 @@ int main( void )
 
     Radio.Rx( RX_TIMEOUT_VALUE );
 
-	//Radio.StartCad(); while(1);
-	
-	//Buffer[0] = 'P';
-	//Buffer[1] = 'I';
-	//Buffer[2] = 'N';
-	//Buffer[3] = 'G';
-	// We fill the buffer with numbers for the payload*/
-	//for( i = 4; i < BufferSize; i++ )
-	//{
-		//Buffer[i] = i - 4;
-	//}
-	//Radio.Send( Buffer, BufferSize );
-	//while(1);
-
     while( 1 )
     {
         switch( State )
         {
         case RX:
+			RecivedPacketCnt++;
+
             if( isMaster == true )
             {
                 if( BufferSize > 0 )
@@ -371,32 +377,46 @@ int main( void )
                         // Indicates on a LED that the received frame is a PONG
                         GpioWrite( &Led5, GpioRead( &Led5 ) ^ 1 );
 
+						// Read command from packet
+						if( IS_NEW_SESSION( Buffer[4] ) )
+							SendedPacketCnt = RecivedPacketCnt = 0;
+
+						CompanionSndCnt =  GETW(Buffer[5], Buffer[6]);
+						Log(INFO_LOG, "CompanionSndCnt=%i\tRecivedCnt=%i\n", \
+								CompanionSndCnt, RecivedPacketCnt); DelayMs( 5 );
                         // Send the next PING frame
                         Buffer[0] = 'P';
                         Buffer[1] = 'I';
                         Buffer[2] = 'N';
                         Buffer[3] = 'G';
-                        // We fill the buffer with numbers for the payload
-                        for( i = 4; i < BufferSize; i++ )
-                        {
-                            Buffer[i] = i - 4;
-                        }
+                        Buffer[4] = justLaunched ? NEW_SESSION_CMD : 0;
+
+						// Число отправленных пакетов увеличивается на 1
+						SendedPacketCnt = justLaunched ? 0 : SendedPacketCnt + 1;
+						justLaunched = false;
+
+						Buffer[5] = HWORD(SendedPacketCnt);
+						Buffer[6] = LWORD(SendedPacketCnt);
+
+						for (i = 7; i < BufferSize; ++i)
+							Buffer[i] = 0;
+
                         DelayMs( 1 );
                         Radio.Send( Buffer, BufferSize );
 
-						Log("PING sended...\n"); DelayMs( 100 );
+						Log(INFO_LOG, "PING sended...\n"); DelayMs( 100 );
                     }
                     else if( strncmp( ( const char* )Buffer, ( const char* )PingMsg, 4 ) == 0 )
                     { // A master already exists then become a slave
                         isMaster = false;
                         GpioWrite( &Led4, 1 ); // Set LED off
-						Log("Waiting RX...\n"); DelayMs(20);
+						Log(DEBUG_LOG, "Waiting RX...\n"); DelayMs(20);
                         Radio.Rx( RX_TIMEOUT_VALUE );
                     }
                     else // valid reception but neither a PING or a PONG message
                     {    // Set device as master ans start again
                         isMaster = true;
-						Log("Waiting RX...\n"); DelayMs(20);
+						Log(DEBUG_LOG, "Waiting RX...\n"); DelayMs(20);
                         Radio.Rx( RX_TIMEOUT_VALUE );
                     }
                 }
@@ -410,25 +430,40 @@ int main( void )
                         // Indicates on a LED that the received frame is a PING
                         GpioWrite( &Led5, GpioRead( &Led5 ) ^ 1 );
 
+						// Read command from packet
+						if( IS_NEW_SESSION( Buffer[4] ) )
+							SendedPacketCnt = RecivedPacketCnt = 0;
+
+						CompanionSndCnt =  GETW(Buffer[5], Buffer[6]);
+						Log(INFO_LOG, "CompanionSndCnt=%i\tRecivedCnt=%i\n", \
+								CompanionSndCnt, RecivedPacketCnt); DelayMs( 5 );
+
                         // Send the reply to the PONG string
                         Buffer[0] = 'P';
                         Buffer[1] = 'O';
                         Buffer[2] = 'N';
                         Buffer[3] = 'G';
-                        // We fill the buffer with numbers for the payload
-                        for( i = 4; i < BufferSize; i++ )
-                        {
-                            Buffer[i] = i - 4;
-                        }
+                        Buffer[4] = justLaunched ? NEW_SESSION_CMD : 0;
+
+						// Число отправленных пакетов увеличивается на 1
+						SendedPacketCnt = justLaunched ? 0 : SendedPacketCnt + 1;
+						justLaunched = false;
+
+						Buffer[5] = HWORD(SendedPacketCnt);
+						Buffer[6] = LWORD(SendedPacketCnt);
+
+						for (i = 7; i < BufferSize; ++i)
+							Buffer[i] = 0;
+
                         DelayMs( 1 );
                         Radio.Send( Buffer, BufferSize );
 
-						Log("PONG sended...\n"); DelayMs( 100 );
+						Log(INFO_LOG, "PONG sended...\n"); DelayMs( 100 );
                     }
                     else // valid reception but not a PING as expected
                     {    // Set device as master and start again
                         isMaster = true;
-						Log("Waiting RX...\n"); DelayMs(10);
+						Log(DEBUG_LOG, "Waiting RX...\n"); DelayMs(10);
                         Radio.Rx( RX_TIMEOUT_VALUE );
                     }
                 }
@@ -439,40 +474,51 @@ int main( void )
             // Indicates on a LED that we have sent a PING [Master]
             // Indicates on a LED that we have sent a PONG [Slave]
             //GpioWrite( &Led4, GpioRead( &Led4 ) ^ 1 );
-			//Log("Waiting RX...\n"); DelayMs(20);
+			//Log(DEBUG_LOG, "Waiting RX...\n"); DelayMs(20);
             //Radio.Rx( RX_TIMEOUT_VALUE );
             State = LOWPOWER;
             break;
         case RX_TIMEOUT:
         case RX_ERROR:
 
-			Log("RX_TIMEOUT or RX_ERROR...\n"); DelayMs( 100 );
+			Log(DEBUG_LOG, "RX_TIMEOUT or RX_ERROR...\n"); DelayMs( 10 );
 
             if( isMaster == true )
             {
+				// Ожидаем произвольное время от времени ожидания пакета
+				DelayMs(rand( ) % RX_TIMEOUT_VALUE);
+
                 // Send the next PING frame
                 Buffer[0] = 'P';
                 Buffer[1] = 'I';
                 Buffer[2] = 'N';
                 Buffer[3] = 'G';
-                for( i = 4; i < BufferSize; i++ )
-                {
-                    Buffer[i] = i - 4;
-                }
+				
+				Buffer[4] = justLaunched ? NEW_SESSION_CMD : 0;
+
+				// Число отправленных пакетов увеличивается на 1
+				SendedPacketCnt = justLaunched ? 0 : SendedPacketCnt + 1;
+
+				Buffer[5] = HWORD(SendedPacketCnt);
+				Buffer[6] = LWORD(SendedPacketCnt);
+
+				for (i = 7; i < BufferSize; ++i)
+					Buffer[i] = 0;
+
                 DelayMs( 1 );
                 Radio.Send( Buffer, BufferSize );
 
-				Log("PING sended...\n"); DelayMs( 100 );
+				Log(INFO_LOG, "PING sended...\n"); DelayMs( 100 );
             }
             else
             {
-				Log("Waiting RX...\n"); DelayMs(20);
+				Log(DEBUG_LOG, "Waiting RX...\n"); DelayMs(20);
                 Radio.Rx( RX_TIMEOUT_VALUE );
             }
             State = LOWPOWER;
             break;
         case TX_TIMEOUT:
-			Log("Waiting RX...\n"); DelayMs(20);
+			Log(DEBUG_LOG, "Waiting RX...\n"); DelayMs(20);
             Radio.Rx( RX_TIMEOUT_VALUE );
             State = LOWPOWER;
             break;
@@ -493,25 +539,16 @@ void OnTxDone( void )
     Radio.Sleep( );
     State = TX;
 
-	Log("OnTxDone. New state = TX\n"); DelayMs( 100 );
+	Log(DEBUG_LOG, "OnTxDone. New state = TX\n"); DelayMs( 100 );
 	GpioWrite( &Led4, GpioRead( &Led4 ) ^ 1 );
-	Log("Waiting RX...\n"); DelayMs(20);
+	Log(DEBUG_LOG, "Waiting RX...\n"); DelayMs(20);
 	Radio.Rx( RX_TIMEOUT_VALUE );
-
-	//Buffer[0] = 'P';
-	//Buffer[1] = 'I';
-	//Buffer[2] = 'N';
-	//Buffer[3] = 'G';
-	// We fill the buffer with numbers for the payload
-	//for( i = 4; i < BufferSize; i++ )
-	//{
-		//Buffer[i] = i - 4;
-	//}
-	//Radio.Send( Buffer, BufferSize );
 }
 
 void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
 {
+	char buff[64] = {};
+
     Radio.Sleep( );
     BufferSize = size;
     memcpy( Buffer, payload, BufferSize );
@@ -519,7 +556,11 @@ void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
     SnrValue = snr;
     State = RX;
 
-	Log("OnRxDone: Payload size=%i RSSI=%i New state = RX\n", size, rssi); 
+	LcdClear();
+	snprintf(buff, 64, "R%i", rssi);
+	LcdWriteString( (uint8_t *) buff);
+
+	Log(INFO_LOG, "OnRxDone: Payload size=%i RSSI=%i New state = RX\n", size, rssi); 
 	DelayMs( 100 );
 }
 
@@ -528,7 +569,7 @@ void OnTxTimeout( void )
     Radio.Sleep( );
     State = TX_TIMEOUT;
 
-	Log("OnTxTimeout... New state = TX_TIMEOUT\n"); DelayMs( 100 );
+	Log(DEBUG_LOG, "OnTxTimeout... New state = TX_TIMEOUT\n"); DelayMs( 100 );
 }
 
 void OnRxTimeout( void )
@@ -536,7 +577,7 @@ void OnRxTimeout( void )
     Radio.Sleep( );
     State = RX_TIMEOUT;
 
-	Log("OnRxTimeout... New state = RX_TIMEOUT\n"); DelayMs( 100 );
+	Log(DEBUG_LOG, "OnRxTimeout... New state = RX_TIMEOUT\n"); DelayMs( 100 );
 }
 
 void OnRxError( void )
@@ -544,18 +585,18 @@ void OnRxError( void )
     Radio.Sleep( );
     State = RX_ERROR;
 
-	Log("OnRxError! New state = RX_ERROR\n"); DelayMs( 100 );
+	Log(DEBUG_LOG, "OnRxError! New state = RX_ERROR\n"); DelayMs( 100 );
 }
 
 void OnCadDone( bool channelActivityDetected )
 {
 	if (channelActivityDetected) 
 	{
-		Log("OnCadDone. Channel ACTIVITY DETECTED!!!\n"); DelayMs( 100 );
+		Log(DEBUG_LOG, "OnCadDone. Channel ACTIVITY DETECTED!!!\n"); DelayMs( 100 );
 	}
 	else
 	{
-		Log("OnCadDone. Channel activity not detected...\n"); DelayMs( 100 );
+		Log(DEBUG_LOG, "OnCadDone. Channel activity not detected...\n"); DelayMs( 100 );
 		Radio.StartCad();
 	}
 }

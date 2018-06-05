@@ -23,6 +23,7 @@
 
 #include <string.h>
 #include "stm32l4xx.h"
+#include "stm32l476g_discovery.h"
 #include "utilities.h"
 #include "delay.h"
 #include "gpio.h"
@@ -31,6 +32,7 @@
 #include "spi.h"
 #include "uart.h"
 #include "i2c.h"
+#include "lcd.h"
 #include "uart.h"
 #include "timer.h"
 #include "board-config.h"
@@ -171,6 +173,9 @@ void BoardInitPeriph( void )
 
     // Init GPS
     /*GpsInit( );*/
+
+	// LCD Init
+	LcdInit( );
 
     GpioWrite( &Led4, 1 );
     GpioWrite( &Led5, 1 );

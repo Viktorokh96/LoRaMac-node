@@ -10,6 +10,15 @@ SET(CMAKE_C_FLAGS "${OBJECT_GEN_FLAGS} -std=gnu99" CACHE INTERNAL "C compiler fl
 SET(CMAKE_CXX_FLAGS "${OBJECT_GEN_FLAGS} -std=c++11" CACHE INTERNAL "cxx compiler flags")
 SET(CMAKE_ASM_FLAGS "${OBJECT_GEN_FLAGS} -x assembler-with-cpp" CACHE INTERNAL "asm compiler flags")
 
+#---------------------------------------------------------------------------------------
+# Set __FILENAME__ debug option
+#---------------------------------------------------------------------------------------
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__FILENAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__FILENAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
+
+#---------------------------------------------------------------------------------------
+
 SET(CMAKE_EXE_LINKER_FLAGS "-Wl,--gc-sections -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mabi=aapcs -T${LINKER_SCRIPT} -Wl,-Map=${CMAKE_PROJECT_NAME}.map" CACHE INTERNAL "executable linker flags")
 SET(CMAKE_MODULE_LINKER_FLAGS "-mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mabi=aapcs" CACHE INTERNAL "module linker flags")
 SET(CMAKE_SHARED_LINKER_FLAGS "-mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mabi=aapcs" CACHE INTERNAL "shared linker flags")

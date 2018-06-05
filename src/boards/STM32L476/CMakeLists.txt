@@ -30,6 +30,7 @@ list(APPEND ${PROJECT_NAME}_SOURCES
 	"${CMAKE_CURRENT_SOURCE_DIR}/rtc-board.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/spi-board.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/i2c-board.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/lcd-board.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/sx1276-board.c"
 	"${CMAKE_CURRENT_SOURCE_DIR}/uart-board.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/delay-board.c"
@@ -38,6 +39,7 @@ list(APPEND ${PROJECT_NAME}_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/cmsis/arm-gcc/startup_stm32l476xx.s"
     "${CMAKE_CURRENT_SOURCE_DIR}/cmsis/system_stm32l4xx.c"
 	"${CMAKE_CURRENT_SOURCE_DIR}/cmsis/STM32L476G-Discovery/stm32l476g_discovery.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmsis/STM32L476G-Discovery/stm32l476g_discovery_glass_lcd.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_adc.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_adc_ex.c"
@@ -62,11 +64,12 @@ list(APPEND ${PROJECT_NAME}_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pcd.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pcd_ex.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../mcu/stm32/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_lcd.c"
 )
 
 add_library(${PROJECT_NAME} OBJECT EXCLUDE_FROM_ALL ${${PROJECT_NAME}_SOURCES})
 
-target_compile_definitions(${PROJECT_NAME} PUBLIC -DUSE_HAL_DRIVER -DUSE_FULL_ASSERT -DSTM32L476VGTx -DSTM32L4 -DSTM32L476G_DISCO -DSTM32L476xx)
+target_compile_definitions(${PROJECT_NAME} PUBLIC -DUSE_HAL_DRIVER -DUSE_FULL_ASSERT -DSTM32L4 -DSTM32L476xx -DSTM32L476VGTx -DSTM32L476G_DISCO)
 
 # Add define if debbuger support is enabled
 target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<BOOL:${USE_DEBUGGER}>:USE_DEBUGGER>)
